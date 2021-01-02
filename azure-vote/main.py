@@ -23,7 +23,10 @@ from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 instrumentation_key = "InstrumentationKey=11351a6c-0fbb-41ab-940e-0cb6eea28faf;IngestionEndpoint=https://westus2-1.in.applicationinsights.azure.com/"
 
 logger = logging.getLogger(__name__)
-logger.addHandler(AzureLogHandler(connection_string=instrumentation_key))
+
+handler = AzureLogHandler(connection_string=instrumentation_key)
+handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
+logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 # Metrics
