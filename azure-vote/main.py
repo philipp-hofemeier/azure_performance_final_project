@@ -20,24 +20,21 @@ from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
-instrumentation_key = "InstrumentationKey=11351a6c-0fbb-41ab-940e-0cb6eea28faf;IngestionEndpoint=https://westus2-1.in.applicationinsights.azure.com/"
+INSTRUMENTATION_KEY = "InstrumentationKey=ac395a08-1490-4353-8b0e-a60c3249a562"
 
 logger = logging.getLogger(__name__)
-
-handler = AzureLogHandler(connection_string=instrumentation_key)
-handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
-logger.addHandler(handler)
+logger.addHandler(AzureLogHandler(connection_string=INSTRUMENTATION_KEY))
 logger.setLevel(logging.INFO)
 
 # Metrics
 exporter = metrics_exporter.new_metrics_exporter(
     enable_standard_metrics=True,
-    connection_string=instrumentation_key
+    connection_string=INSTRUMENTATION_KEY
 )
 
 # Tracing
 tracer = Tracer(
-    exporter=AzureExporter(connection_string=instrumentation_key),
+    exporter=AzureExporter(connection_string=INSTRUMENTATION_KEY),
     sampler=ProbabilitySampler(1.0),
 )
 
@@ -46,7 +43,7 @@ app = Flask(__name__)
 # Requests
 middleware = FlaskMiddleware(
     app,
-    exporter=AzureExporter(connection_string=instrumentation_key),
+    exporter=AzureExporter(connection_string=INSTRUMENTATION_KEY),
     sampler=ProbabilitySampler(1.0),
 )
 
