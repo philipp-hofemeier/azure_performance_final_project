@@ -20,7 +20,7 @@ from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
-instrumentation_key = 'InstrumentationKey=6f2e0440-4ed0-4cac-96c4-0b35f03b47a9'
+instrumentation_key = 'InstrumentationKey=11351a6c-0fbb-41ab-940e-0cb6eea28faf'
 
 logger = logging.getLogger(__name__)
 logger.addHandler(AzureLogHandler(connection_string=instrumentation_key))
