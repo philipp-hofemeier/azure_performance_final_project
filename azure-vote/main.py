@@ -20,7 +20,7 @@ from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
-instrumentation_key = 'InstrumentationKey=11351a6c-0fbb-41ab-940e-0cb6eea28faf'
+instrumentation_key = "InstrumentationKey=11351a6c-0fbb-41ab-940e-0cb6eea28faf;IngestionEndpoint=https://westus2-1.in.applicationinsights.azure.com/"
 
 logger = logging.getLogger(__name__)
 logger.addHandler(AzureLogHandler(connection_string=instrumentation_key))
@@ -44,7 +44,7 @@ app = Flask(__name__)
 middleware = FlaskMiddleware(
     app,
     exporter=AzureExporter(connection_string=instrumentation_key),
-    sampler=ProbabilitySampler(rate=1.0),
+    sampler=ProbabilitySampler(1.0),
 )
 
 # Load configurations from environment or config file
@@ -98,11 +98,11 @@ def index():
             r.set(button2,0)
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
-            logger.info("Vote cats", extra=properties)
+            logger.warning("Vote cats", extra=properties)
 
             vote2 = r.get(button2).decode('utf-8')
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
-            logger.info("Vote dogs", extra=properties)
+            logger.warning("Vote dogs", extra=properties)
 
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
