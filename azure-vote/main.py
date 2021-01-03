@@ -19,6 +19,7 @@ from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
+from applicationinsights import TelemetryClient
 
 # Logging
 logger = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ tracer = Tracer(
         connection_string='InstrumentationKey=f4988448-63ed-4960-9c4e-b754b82bb1cf'),
     sampler=ProbabilitySampler(1.0),
 )
+tc = TelemetryClient('f4988448-63ed-4960-9c4e-b754b82bb1cf')
 
 app = Flask(__name__)
 
@@ -83,9 +85,13 @@ def index():
     if request.method == 'GET':
         # Get current values
         vote1 = r.get(button1).decode('utf-8')
-        tracer.span(name="Cat")
+        tracer.span("Cats")
+        tc.track_event("Cats")
+        tc.flush()
         vote2 = r.get(button2).decode('utf-8')
-        tracer.span(name="Dog")
+        tracer.span("Dogs")
+        tc.track_event("Dogs")
+        tc.flush()
 
         # Return index with values
         return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
