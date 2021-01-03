@@ -20,21 +20,22 @@ from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
-INSTRUMENTATION_KEY = "InstrumentationKey=ac395a08-1490-4353-8b0e-a60c3249a562"
-
+# Logging
 logger = logging.getLogger(__name__)
-logger.addHandler(AzureLogHandler(connection_string=INSTRUMENTATION_KEY))
+logger.addHandler(AzureLogHandler(
+    connection_string='InstrumentationKey=f4988448-63ed-4960-9c4e-b754b82bb1cf')
+)
 logger.setLevel(logging.INFO)
 
 # Metrics
 exporter = metrics_exporter.new_metrics_exporter(
-    enable_standard_metrics=True,
-    connection_string=INSTRUMENTATION_KEY
-)
+  enable_standard_metrics=True,
+  connection_string='InstrumentationKey=f4988448-63ed-4960-9c4e-b754b82bb1cf')
 
 # Tracing
 tracer = Tracer(
-    exporter=AzureExporter(connection_string=INSTRUMENTATION_KEY),
+    exporter=AzureExporter(
+        connection_string='InstrumentationKey=f4988448-63ed-4960-9c4e-b754b82bb1cf'),
     sampler=ProbabilitySampler(1.0),
 )
 
@@ -43,8 +44,8 @@ app = Flask(__name__)
 # Requests
 middleware = FlaskMiddleware(
     app,
-    exporter=AzureExporter(connection_string=INSTRUMENTATION_KEY),
-    sampler=ProbabilitySampler(1.0),
+    exporter=AzureExporter(connection_string="InstrumentationKey=f4988448-63ed-4960-9c4e-b754b82bb1cf"),
+    sampler=ProbabilitySampler(rate=1.0),
 )
 
 # Load configurations from environment or config file
@@ -82,9 +83,9 @@ def index():
     if request.method == 'GET':
         # Get current values
         vote1 = r.get(button1).decode('utf-8')
-        tracer.span(name="Cat vote")
+        tracer.span(name="Cat")
         vote2 = r.get(button2).decode('utf-8')
-        tracer.span(name="Dog vote")
+        tracer.span(name="Dog")
 
         # Return index with values
         return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
@@ -98,11 +99,11 @@ def index():
             r.set(button2,0)
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
-            logger.warning("Vote cats", extra=properties)
+            logger.warning("Cat", extra=properties)
 
             vote2 = r.get(button2).decode('utf-8')
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
-            logger.warning("Vote dogs", extra=properties)
+            logger.warning("Dog", extra=properties)
 
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
@@ -121,6 +122,6 @@ def index():
 
 if __name__ == "__main__":
     # comment line below when deploying to VMSS
-    # app.run() # local
+    app.run() # local
     # uncomment the line below before deployment to VMSS
-    app.run(host='0.0.0.0', threaded=True, debug=True) # remote
+    # app.run(host='0.0.0.0', threaded=True, debug=True) # remote
